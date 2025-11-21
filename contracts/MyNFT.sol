@@ -3,10 +3,11 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract MyNFT is ERC721, ERC721URIStorage, Ownable {
+contract MyNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     using Strings for uint256;
 
     uint256 private _tokenIdCounter;
@@ -26,6 +27,8 @@ contract MyNFT is ERC721, ERC721URIStorage, Ownable {
     event NFTListedForSale(uint256 indexed tokenId, uint256 price);
     event NFTSold(uint256 indexed tokenId, address indexed from, address indexed to, uint256 price);
     event NFTUnlisted(uint256 indexed tokenId);
+    event NFTBurned(uint256 indexed tokenId, address indexed owner);
+    event NFTTransferred(uint256 indexed tokenId, address indexed from, address indexed to);
 
     constructor() ERC721("SeoDongMin NFT", "SDMNFT") Ownable(msg.sender) {
         _tokenIdCounter = 0;
@@ -48,6 +51,36 @@ contract MyNFT is ERC721, ERC721URIStorage, Ownable {
 
         emit NFTMinted(tokenId, to, uri);
         return tokenId;
+    }
+
+    function burnNFT(uint256 tokenId) public {
+        require(ownerOf(tokenId) == msg.sender, "You are not the owner");
+        require(!nftItems[tokenId].isForSale, "Cannot burn NFT that is listed for sale");
+
+        address owner = ownerOf(tokenId);
+
+        delete nftItems[tokenId];
+        delete tokenPrices[tokenId];
+
+        _burn(tokenId);
+
+        emit NFTBurned(tokenId, owner);
+    }
+
+    function transferNFT(address to, uint256 tokenId) public {
+        require(ownerOf(tokenId) == msg.sender, "You are not the owner");
+        require(!nftItems[tokenId].isForSale, "Cannot transfer NFT that is listed for sale");
+        require(to != address(0), "Cannot transfer to zero address");
+
+        address from = msg.sender;
+
+        nftItems[tokenId].owner = to;
+        nftItems[tokenId].price = 0;
+        nftItems[tokenId].isForSale = false;
+
+        safeTransferFrom(from, to, tokenId);
+
+        emit NFTTransferred(tokenId, from, to);
     }
 
     function listNFTForSale(uint256 tokenId, uint256 price) public {
@@ -91,17 +124,27 @@ contract MyNFT is ERC721, ERC721URIStorage, Ownable {
     }
 
     function getAllNFTs() public view returns (NFTItem[] memory) {
-        NFTItem[] memory items = new NFTItem[](_tokenIdCounter);
+        uint256 activeCount = 0;
 
         for (uint256 i = 1; i <= _tokenIdCounter; i++) {
             if (_ownerOf(i) != address(0)) {
-                items[i - 1] = NFTItem({
+                activeCount++;
+            }
+        }
+
+        NFTItem[] memory items = new NFTItem[](activeCount);
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 1; i <= _tokenIdCounter; i++) {
+            if (_ownerOf(i) != address(0)) {
+                items[currentIndex] = NFTItem({
                     tokenId: i,
                     owner: ownerOf(i),
                     tokenURI: tokenURI(i),
                     price: nftItems[i].price,
                     isForSale: nftItems[i].isForSale
                 });
+                currentIndex++;
             }
         }
 

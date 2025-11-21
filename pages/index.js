@@ -17,6 +17,8 @@ export default function Home() {
 
   const contractABI = [
     "function mintNFT(address to, string memory uri) public returns (uint256)",
+    "function burnNFT(uint256 tokenId) public",
+    "function transferNFT(address to, uint256 tokenId) public",
     "function getAllNFTs() public view returns (tuple(uint256 tokenId, address owner, string tokenURI, uint256 price, bool isForSale)[])",
     "function getMyNFTs(address owner) public view returns (tuple(uint256 tokenId, address owner, string tokenURI, uint256 price, bool isForSale)[])",
     "function listNFTForSale(uint256 tokenId, uint256 price) public",
@@ -131,6 +133,35 @@ export default function Home() {
     }
   };
 
+  const handleBurn = async (tokenId) => {
+    if (!contract) return;
+    if (!confirm(`NFT #${tokenId}를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+      return;
+    }
+    try {
+      const tx = await contract.burnNFT(tokenId);
+      await tx.wait();
+      alert("NFT 삭제 완료!");
+      loadNFTs();
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert("삭제 실패: " + error.message);
+    }
+  };
+
+  const handleTransfer = async (tokenId, toAddress) => {
+    if (!contract) return;
+    try {
+      const tx = await contract.transferNFT(toAddress, tokenId);
+      await tx.wait();
+      alert("NFT 전송 완료!");
+      loadNFTs();
+    } catch (error) {
+      console.error("전송 실패:", error);
+      alert("전송 실패: " + error.message);
+    }
+  };
+
   const handleListForSale = async (tokenId, price) => {
     if (!contract) return;
     try {
@@ -236,6 +267,8 @@ export default function Home() {
                           onListForSale={handleListForSale}
                           onUnlist={handleUnlist}
                           onBuy={handleBuy}
+                          onBurn={handleBurn}
+                          onTransfer={handleTransfer}
                         />
                       ))}
                     {activeTab === 'my' &&
@@ -247,6 +280,8 @@ export default function Home() {
                           onListForSale={handleListForSale}
                           onUnlist={handleUnlist}
                           onBuy={handleBuy}
+                          onBurn={handleBurn}
+                          onTransfer={handleTransfer}
                         />
                       ))}
                   </div>

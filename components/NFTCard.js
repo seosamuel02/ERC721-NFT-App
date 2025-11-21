@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import styles from '../styles/NFTCard.module.css';
 
-export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }) {
+export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy, onBurn, onTransfer }) {
   const [showPriceInput, setShowPriceInput] = useState(false);
+  const [showTransferInput, setShowTransferInput] = useState(false);
   const [price, setPrice] = useState('');
+  const [transferAddress, setTransferAddress] = useState('');
   const [imageError, setImageError] = useState(false);
 
   const isOwner = account && nft.owner && account.toLowerCase() === nft.owner.toLowerCase();
@@ -12,6 +14,12 @@ export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }
 
   const handleListClick = () => {
     setShowPriceInput(true);
+    setShowTransferInput(false);
+  };
+
+  const handleTransferClick = () => {
+    setShowTransferInput(true);
+    setShowPriceInput(false);
   };
 
   const handleListSubmit = (e) => {
@@ -23,12 +31,27 @@ export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }
     }
   };
 
+  const handleTransferSubmit = (e) => {
+    e.preventDefault();
+    if (transferAddress && transferAddress.startsWith('0x')) {
+      onTransfer(nft.tokenId, transferAddress);
+      setTransferAddress('');
+      setShowTransferInput(false);
+    } else {
+      alert('올바른 주소를 입력해주세요 (0x로 시작)');
+    }
+  };
+
   const handleUnlistClick = () => {
     onUnlist(nft.tokenId);
   };
 
   const handleBuyClick = () => {
     onBuy(nft.tokenId, nft.price);
+  };
+
+  const handleBurnClick = () => {
+    onBurn(nft.tokenId);
   };
 
   const handleImageError = () => {
@@ -65,10 +88,18 @@ export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }
         )}
 
         <div className={styles.actions}>
-          {isOwner && !nft.isForSale && !showPriceInput && (
-            <button onClick={handleListClick} className={styles.listButton}>
-              판매 등록
-            </button>
+          {isOwner && !nft.isForSale && !showPriceInput && !showTransferInput && (
+            <>
+              <button onClick={handleListClick} className={styles.listButton}>
+                판매 등록
+              </button>
+              <button onClick={handleTransferClick} className={styles.transferButton}>
+                전송
+              </button>
+              <button onClick={handleBurnClick} className={styles.burnButton}>
+                삭제
+              </button>
+            </>
           )}
 
           {isOwner && showPriceInput && (
@@ -86,6 +117,27 @@ export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }
               <button
                 type="button"
                 onClick={() => setShowPriceInput(false)}
+                className={styles.cancelButton}
+              >
+                취소
+              </button>
+            </form>
+          )}
+
+          {isOwner && showTransferInput && (
+            <form onSubmit={handleTransferSubmit} className={styles.priceForm}>
+              <input
+                type="text"
+                value={transferAddress}
+                onChange={(e) => setTransferAddress(e.target.value)}
+                placeholder="받는 주소 (0x...)"
+                className={styles.priceInput}
+                required
+              />
+              <button type="submit" className={styles.submitButton}>전송</button>
+              <button
+                type="button"
+                onClick={() => setShowTransferInput(false)}
                 className={styles.cancelButton}
               >
                 취소
