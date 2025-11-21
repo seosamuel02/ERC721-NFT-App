@@ -5,6 +5,7 @@ import styles from '../styles/NFTCard.module.css';
 export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }) {
   const [showPriceInput, setShowPriceInput] = useState(false);
   const [price, setPrice] = useState('');
+  const [imageError, setImageError] = useState(false);
 
   const isOwner = account && nft.owner && account.toLowerCase() === nft.owner.toLowerCase();
   const priceInEth = nft.price ? ethers.formatEther(nft.price) : '0';
@@ -30,11 +31,20 @@ export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }
     onBuy(nft.tokenId, nft.price);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.imageContainer}>
-        {nft.tokenURI.startsWith('http') ? (
-          <img src={nft.tokenURI} alt={`NFT #${nft.tokenId}`} className={styles.image} />
+        {nft.tokenURI.startsWith('http') && !imageError ? (
+          <img
+            src={nft.tokenURI}
+            alt={`NFT #${nft.tokenId}`}
+            className={styles.image}
+            onError={handleImageError}
+          />
         ) : (
           <div className={styles.placeholderImage}>
             <p>NFT #{nft.tokenId}</p>
@@ -96,8 +106,10 @@ export default function NFTCard({ nft, account, onListForSale, onUnlist, onBuy }
           )}
         </div>
 
-        {nft.tokenURI && !nft.tokenURI.startsWith('http') && (
-          <p className={styles.uri}>{nft.tokenURI}</p>
+        {nft.tokenURI && (
+          <p className={styles.uri}>
+            {nft.tokenURI.length > 50 ? nft.tokenURI.slice(0, 50) + '...' : nft.tokenURI}
+          </p>
         )}
       </div>
     </div>
