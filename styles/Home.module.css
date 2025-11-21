@@ -1,0 +1,181 @@
+.container {
+  min-height: 100vh;
+  padding: 0 2rem;
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  margin: 2rem 0;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.header h1 {
+  color: #f5576c;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.studentInfo {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 1rem;
+}
+
+.studentInfo p {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.connectButton {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 1.5rem 3rem;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.connectButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.infoSection {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.infoSection h2 {
+  color: #f5576c;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.infoCard {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #f5576c;
+}
+
+.infoCard p {
+  margin: 0.75rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.infoCard strong {
+  color: #f5576c;
+}
+
+.address {
+  word-break: break-all;
+  font-family: 'Courier New', monospace;
+  background: #e9ecef;
+  padding: 0.5rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.nftSection {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.tab,
+.activeTab {
+  padding: 1rem 2rem;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab {
+  color: #6c757d;
+}
+
+.tab:hover {
+  color: #f5576c;
+}
+
+.activeTab {
+  color: #f5576c;
+  border-bottom-color: #f5576c;
+}
+
+.nftGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #6c757d;
+  font-size: 1.1rem;
+  padding: 3rem;
+}
+
+.footer {
+  text-align: center;
+  padding: 2rem;
+  color: white;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .studentInfo {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .connectButton {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+
+  .nftGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+}
