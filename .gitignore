@@ -32,7 +32,7 @@ yarn-error.log*
 # hardhat
 cache
 artifacts
-deployment-info.json
+/deployment-info.json
 
 # IDE
 .vscode
